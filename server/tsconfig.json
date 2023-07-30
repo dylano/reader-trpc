@@ -1,0 +1,6 @@
+{
+  "extends": "@tsconfig/node19/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build"
+  }
+}
