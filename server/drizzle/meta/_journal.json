@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1690747506464,
+      "tag": "0000_fair_dust",
+      "breakpoints": true
+    }
+  ]
+}
