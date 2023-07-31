@@ -61,7 +61,7 @@ export const catRouter = t.router({
         .where(eq(catTable.id, input.id))
         .returning();
       if (deadCat) {
-        return `killed ${deadCat[0].name}`;
+        return `${deadCat[0].name} died`;
       }
       return `all cats survived`;
     }),
