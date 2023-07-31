@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "cats" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" text,
 	"name" text,
 	"age" integer
 );

@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "0c0ce535-5e3a-4277-add8-21315adfdb59",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "b916d761-4c57-4bba-9a0a-7d423749bdf0",
+  "prevId": "0c0ce535-5e3a-4277-add8-21315adfdb59",
   "tables": {
     "cats": {
       "name": "cats",
@@ -11,20 +11,20 @@
         "id": {
           "name": "id",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "primaryKey": true,
+          "notNull": true
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "age": {
           "name": "age",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},

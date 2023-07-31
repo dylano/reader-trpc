@@ -2,16 +2,19 @@ import { v4 as uuid } from 'uuid';
 import z from 'zod';
 import { CreateExpressContextOptions } from '@trpc/server/adapters/express';
 import { inferAsyncReturnType, initTRPC, TRPCError } from '@trpc/server';
+import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { eq } from 'drizzle-orm';
+import {
+  cats as catTable,
+  insertCatSchema,
+  selectCatSchema,
+} from './db/schema';
 
-const Cat = z.object({
-  id: z.string(),
-  name: z.string(),
-  age: z.number(),
-});
-const Cats = z.array(Cat);
-
-export type Cat = z.infer<typeof Cat>;
-export type Cats = z.infer<typeof Cats>;
+const client = postgres(
+  process.env.DATABASE_URL || 'DATABASE_URL is undefined'
+);
+const db = drizzle(client);
 
 export const createContext = ({
   req,
@@ -20,51 +23,45 @@ export const createContext = ({
 type Context = inferAsyncReturnType<typeof createContext>;
 const t = initTRPC.context<Context>().create();
 
-let cats: Cat[] = [];
-
 export const catRouter = t.router({
   get: t.procedure
-    .input(z.string())
-    .output(Cat)
-    .query((opts) => {
+    .input(z.object({ id: z.string() }))
+    .output(selectCatSchema)
+    .query(async (opts) => {
       const { input } = opts;
-      const foundCat = cats.find((cat) => cat.id === input);
+      const foundCat = await db
+        .select()
+        .from(catTable)
+        .where(eq(catTable.id, input.id));
       if (!foundCat) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: `could not find cat with id ${input}`,
         });
       }
-      return foundCat;
+      return foundCat[0];
     }),
-  list: t.procedure.output(Cats).query(() => {
-    return cats;
+  list: t.procedure.query(() => {
+    return db.select().from(catTable);
   }),
-  create: t.procedure
-    .input(
-      z.object({
-        name: z.string().max(50),
-        age: z
-          .number()
-          .min(0)
-          .max(20, { message: 'surely this cat is already dead' }),
-      })
-    )
-    .mutation((opts) => {
-      const { input } = opts;
-      const newCat: Cat = { id: uuid(), name: input.name, age: input.age };
-      cats.push(newCat);
-      return newCat;
-    }),
+  create: t.procedure.input(insertCatSchema).mutation(async (opts) => {
+    const newCat = await db
+      .insert(catTable)
+      .values({ ...opts.input, id: uuid() })
+      .returning();
+    return newCat;
+  }),
   delete: t.procedure
     .input(z.object({ id: z.string() }))
     .output(z.string())
-    .mutation((opts) => {
+    .mutation(async (opts) => {
       const { input } = opts;
-      const cat = cats.find((cat) => cat.id === input.id);
-      if (cat) {
-        cats = cats.filter((cat) => cat.id !== input.id);
-        return `killed ${cat?.name}`;
+      const deadCat = await db
+        .delete(catTable)
+        .where(eq(catTable.id, input.id))
+        .returning();
+      if (deadCat) {
+        return `killed ${deadCat[0].name}`;
       }
       return `all cats survived`;
     }),

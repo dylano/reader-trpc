@@ -15,12 +15,15 @@ function Create() {
       setError(data.message);
     },
   });
+
   const updateName = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
+
   const updateAge = (event: ChangeEvent<HTMLInputElement>) => {
     setAge(parseInt(event.target.value, 10));
   };
+
   const handleCreate = async () => {
     if (name) {
       createMutation.mutate({ name, age });
@@ -28,6 +31,7 @@ function Create() {
     setName('');
     setAge(0);
   };
+
   return (
     <form onSubmit={handleCreate}>
       <div className="Create">

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import type { Cat } from '../../../server/src/catRouter';
-import { catApi } from '../api';
+import { catApi, Cat } from '../api';
 
 function List({ setDetail }: { setDetail: (id: string) => void }) {
   const [error, setError] = useState('');
@@ -22,9 +21,10 @@ function List({ setDetail }: { setDetail: (id: string) => void }) {
       <div
         key={cat.id}
         style={{ display: 'flex', justifyContent: 'space-between' }}
-        onClick={() => setDetail(cat.id)}
       >
-        <span>{cat.name}</span>
+        <span onClick={() => setDetail(cat.id)} style={{ cursor: 'pointer' }}>
+          {cat.name}
+        </span>
         <span>
           <a href="#" onClick={() => handleDelete(cat.id)}>
             delete

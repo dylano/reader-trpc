@@ -1,3 +1,11 @@
-TRPC/Express with React/Vite
+TRPC/Express
+React/Vite
+Postgres/Drizzle
 
-Using starter project from https://blog.logrocket.com/build-full-stack-typescript-app-trpc-react
+With help from:
+
+- https://blog.logrocket.com/build-full-stack-typescript-app-trpc-react
+- https://github.com/drizzle-team/drizzle-trpc-zod/
+
+TRPC Docs: https://trpc.io/docs
+Drizzle docs: https://orm.drizzle.team/docs
