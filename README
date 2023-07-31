@@ -4,7 +4,7 @@ Postgres/Drizzle
 
 With help from:
 
-- https://blog.logrocket.com/build-full-stack-typescript-app-trpc-react
+- https://blog.logrocket.com/build-full-stack-typescript-app-trpc-react (https://github.com/Ikeh-Akinyemi/tRPC)
 - https://github.com/drizzle-team/drizzle-trpc-zod/
 
 TRPC Docs: https://trpc.io/docs
