@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import z from 'zod';
 import { CreateExpressContextOptions } from '@trpc/server/adapters/express';
 import { inferAsyncReturnType, initTRPC, TRPCError } from '@trpc/server';
+import fetch from 'node-fetch';
 import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { eq } from 'drizzle-orm';
@@ -15,6 +16,35 @@ const client = postgres(
   process.env.DATABASE_URL || 'DATABASE_URL is undefined'
 );
 const db = drizzle(client);
+
+const mastoAcctSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  display_name: z.string(),
+  url: z.string().url(),
+  avatar: z.string().url(),
+});
+
+const tootCardSchema = z.object({
+  url: z.string().url(),
+  title: z.string(),
+  description: z.string(),
+  image: z.string().url().nullable().optional(),
+});
+
+const tootSchema = z.object({
+  id: z.string(),
+  created_at: z.string(),
+  uri: z.string().url(),
+  content: z.string(),
+  account: mastoAcctSchema,
+  card: tootCardSchema.nullable().optional(),
+});
+
+const tootListSchema = z.array(tootSchema);
+
+export type Toot = z.infer<typeof tootSchema>;
+export type TootList = z.infer<typeof tootListSchema>;
 
 export const createContext = ({
   req,
@@ -65,6 +95,17 @@ export const catRouter = t.router({
       }
       return `all cats survived`;
     }),
+  masto: t.procedure.output(tootListSchema).query(async () => {
+    const res = await fetch('https://mas.to/api/v1/timelines/home?limit=5', {
+      headers: {
+        Authorization: `Bearer <insert token>`,
+        'Content-Type': 'application/json',
+      },
+    });
+    const json = await res.json();
+    console.log(json);
+    return tootListSchema.parse(json);
+  }),
 });
 
 export type CatRouter = typeof catRouter;
