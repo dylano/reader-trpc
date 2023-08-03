@@ -2,7 +2,9 @@ import 'dotenv/config';
 import express, { Application } from 'express';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import cors from 'cors';
-import { catRouter, createContext } from './catRouter';
+import { createContext } from './trpcContext';
+import { catRouter } from './catRouter';
+import { mastoRouter } from './mastoRouter';
 
 const app: Application = express();
 
@@ -12,6 +14,13 @@ app.use(
   '/cat',
   createExpressMiddleware({
     router: catRouter,
+    createContext,
+  })
+);
+app.use(
+  '/masto',
+  createExpressMiddleware({
+    router: mastoRouter,
     createContext,
   })
 );
